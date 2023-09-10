@@ -1,6 +1,6 @@
-import {Flags} from "./GameState";
 import Image from "next/image";
 import React from "react";
+import {Flags} from "../contexts/GameContext";
 
 export default function PieceFactory(piece: Flags | undefined): JSX.Element {
     switch(piece) {
