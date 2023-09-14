@@ -1,7 +1,15 @@
 import React from "react";
 import {Position} from "../components/Position";
 
-let gameState: bigint[] = []
+let gameState: number[][] = [
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0]
+]
 
 export enum Flags {
     NULL = -1,
@@ -18,8 +26,8 @@ export enum Flags {
 
 interface IGameContextProps {
     move(initial: Position, final: Position): boolean,
-    state(): bigint[],
-    flagState(flag: Flags): bigint,
+    state(): number[][],
+    flagState(flag: Flags): number[],
     pieceAtPosition(position: Position): Flags,
 }
 
@@ -48,19 +56,21 @@ function move(): boolean {
     return false
 }
 
-function state(): bigint[] {
+function state(): number[][] {
     return gameState
 }
 
-function flagState(flag: Flags): bigint {
+function flagState(flag: Flags): number[] {
     return gameState[flag]
 }
 
 function pieceAtPosition(position: Position): Flags {
     for (let i = 0; i < Flags.PIECEITER; i++) {
-        let isPiece: bigint = gameState[i] & position.offset()
-        if (isPiece != BigInt(0)) {
-            return i
+        for (let k = 0; k < gameState[i].length; k++) {
+            let isPiece: boolean = Boolean(gameState[i][k] & position.offset())
+            if (isPiece) {
+                return i
+            }
         }
     }
     return Flags.NULL

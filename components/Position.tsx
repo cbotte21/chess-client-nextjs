@@ -6,12 +6,16 @@ export class Position {
         this.y = y
     }
 
-    offset(): bigint {
-        let num = 8 * this.x + this.y
-        return BigInt(2 << (num-1))
+    offset(): number {
+        let num = 8 * (this.x-1) + this.y - 1
+        return Number(BigInt(2 << (num-1)) % BigInt(8589934592)) // 2 << 32
     }
 
     value(): number {
-        return this.x-1 + 8*(-this.y-1)
+        return (this.x-1)*8+this.y-1
+    }
+
+    equals(position: Position): boolean {
+        return position.value() == this.value()
     }
 }
