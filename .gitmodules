@@ -1,0 +1,3 @@
+[submodule "chess-app"]
+	path = chess-app
+	url = https://github.com/cbotte21/chess-app
