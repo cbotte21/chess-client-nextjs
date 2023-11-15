@@ -2,10 +2,12 @@ import React from "react";
 import {deleteCookie, getCookie, setCookie} from 'cookies-next';
 import axios, {AxiosError} from 'axios';
 import querystring from "querystring";
+import {redirect} from "next/navigation";
 
 //TODO: login && signup should return a promise of possible Errors
 
 interface IAuthContextProps {
+    authorizedEndpoint(): void, // MIGHT NOT WORK
     authenticated(): boolean,
 
     jwt(): string,
@@ -18,6 +20,7 @@ interface IAuthContextProps {
 }
 
 export var AuthContextProps: IAuthContextProps = {
+    authorizedEndpoint: authorizedEndpoint,
     authenticated: authenticated,
     jwt: jwt,
     logout: logout,
@@ -31,12 +34,16 @@ export function AuthProvider({children}: any): any {
     const [authContext, setAuthContext] = React.useState(AuthContextProps)
 
     return (
-        <>
-            <AuthContext.Provider value={authContext}>
-                {children}
-            </AuthContext.Provider>
-        </>
+        <AuthContext.Provider value={authContext}>
+            {children}
+        </AuthContext.Provider>
     )
+}
+
+function authorizedEndpoint() {
+    if (!authenticated()) {
+        redirect("/auth/login")
+    }
 }
 
 async function login(email: string, password: string): Promise<boolean> {

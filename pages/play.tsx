@@ -1,13 +1,20 @@
 import {useState} from "react";
 import {redirect, RedirectType} from "next/navigation";
 import {QueueClient} from "../utils/queueClient";
+import {AuthContextProps} from "../contexts/AuthContext";
 
 export default function Play() {
+    let [authContext] = useState(AuthContextProps)
+    authContext.authorizedEndpoint()
+
     const originalStatus = <i>Idle</i>
 
     let startQueue = () => {
         setStatus(<i className="text-green-500">Searching...</i>)
-        queueClient.Join()
+        queueClient.Join(authContext.jwt())
+            .catch(err => {
+                alert(err)
+            })
         setContent(endQueueButton)
     }
 
@@ -17,7 +24,7 @@ export default function Play() {
 
     let leaveQueue = () => {
         setStatus(originalStatus)
-        queueClient.Leave()
+        queueClient.Leave(authContext.jwt())
         setContent(startQueueButton)
     }
 

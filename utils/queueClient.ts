@@ -22,11 +22,22 @@ export class QueueClient {
         this.onGame = onGame
     }
 
-    public Join = () => {
-        
+    public Join = (jwt: string): Promise<unknown> => {
+        return new Promise(resolve => {
+            const call = QueueClient.client.Join(jwt);
+            call.on('data', function(status: number) {
+                switch (status) {
+                    case 2:
+                        resolve(true)
+                        break
+                    default:
+                        throw "failed to join queue."
+                }
+            });
+        })
     }
 
-    public Leave = () => {
-
+    public Leave = (jwt: string) => {
+        QueueClient.client.Leave(jwt)
     }
 }
