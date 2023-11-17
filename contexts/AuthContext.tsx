@@ -7,22 +7,29 @@ import {redirect} from "next/navigation";
 //TODO: login && signup should return a promise of possible Errors
 
 interface IAuthContextProps {
-    authorizedEndpoint(): void, // MIGHT NOT WORK
+    _id: string | undefined,
+    _jwt: string | undefined,
+
     authenticated(): boolean,
 
-    jwt(): string,
+    jwt(): string | undefined,
+    id(): string | undefined,
 
+    // Public methods
+    authorizedEndpoint(): void,
     logout(): void,
-
     login(email: string, password: string): Promise<boolean>
-
     signup(email: string, password: string): Promise<boolean>
 }
 
 export var AuthContextProps: IAuthContextProps = {
+    _id: undefined,
+    _jwt: undefined,
+
     authorizedEndpoint: authorizedEndpoint,
     authenticated: authenticated,
     jwt: jwt,
+    id: id,
     logout: logout,
     login: login,
     signup: signup
@@ -40,12 +47,6 @@ export function AuthProvider({children}: any): any {
     )
 }
 
-function authorizedEndpoint() {
-    if (!authenticated()) {
-        redirect("/auth/login")
-    }
-}
-
 async function login(email: string, password: string): Promise<boolean> {
     return axios.post("/api/auth/login",
         querystring.stringify({
@@ -59,10 +60,11 @@ async function login(email: string, password: string): Promise<boolean> {
         .then(function (res) {
 	        setCookie("jwt", res.data.jwt, { sameSite: 'lax' })
             alert(res.status)
-            return authenticated() //TODO: Cookie might be expired? Compare res.status too.
+            return true
         })
         .catch((err: AxiosError) => {
             console.log("AuthContext::login", err)
+            logout()
 	        return false
 	})
 }
@@ -86,15 +88,32 @@ async function signup(email: string, password: string): Promise<boolean> {
         })
 }
 
-function authenticated() {
-    return getCookie("jwt") != undefined
+function authenticated(): boolean {
+    return jwt() != undefined && id() != undefined
 }
 
 function logout() {
     deleteCookie("jwt")
+    AuthContextProps._id = ""
+    AuthContextProps._jwt = ""
 }
 
-function jwt(): string {
-    let tmp = getCookie("jwt")
-    return tmp == undefined ? "" : tmp.toString()
+function authorizedEndpoint() {
+    if (!authenticated()) {
+        const cookie = getCookie("jwt")
+        if (cookie != undefined) {
+            // Load cookie data
+            // Recursive call
+        }
+        redirect("/auth/login")
+    }
+    // Return if token is expired
+}
+
+function jwt(): string | undefined {
+    return AuthContextProps._id
+}
+
+function id(): string | undefined {
+    return AuthContextProps._id
 }
