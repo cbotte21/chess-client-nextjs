@@ -11,7 +11,7 @@ export default function Play() {
 
     let startQueue = () => {
         setStatus(<i className="text-green-500">Searching...</i>)
-        queueClient.Join(authContext.jwt())
+        queueClient.Join(authContext.jwt()!!)
             .catch(err => {
                 alert(err)
             })
@@ -24,7 +24,7 @@ export default function Play() {
 
     let leaveQueue = () => {
         setStatus(originalStatus)
-        queueClient.Leave(authContext.jwt())
+        queueClient.Leave(authContext.jwt()!!)
         setContent(startQueueButton)
     }
 
