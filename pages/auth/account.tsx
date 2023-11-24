@@ -11,7 +11,7 @@ const Account: NextPage = () => {
     let [jwt, setJwt] = React.useState("");
     let [email, setEmail] = React.useState("example@example.com");
     useEffect(() => {
-        setJwt(authContext.jwt)
+        setJwt(authContext.jwt.toString())
     }, [jwt]);
     return (
         <div>
@@ -35,7 +35,7 @@ const Account: NextPage = () => {
                     <td className="w-28 text-center">JWT</td>
                     <td><input
                         className={valueStyle}
-                        onChange={() => setJwt(authContext.jwt)}
+                        onChange={() => setJwt(authContext.jwt.toString())}
                         type="text" value={jwt}/></td>
                 </tr>
                 <tr>
