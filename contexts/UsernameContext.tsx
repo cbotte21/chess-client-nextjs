@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import {AuthContextProps} from "./AuthContext";
 
 interface IUsernameContextProps {
@@ -28,7 +28,7 @@ export function UsernameProvider({children}: any): any {
 
     useEffect(() => {
         if (authContext.authenticated()) {
-            usernameContext.refresh(authContext.id())
+            usernameContext.refresh(authContext.id()!!)
         }
     }, [authContext.authenticated()]);
 
@@ -43,12 +43,10 @@ function get(): string {
     return UsernameContextProps.username
 }
 
-function search(_id: string): Promise<any> {
-    return axios.get("/api/username?_id="+_id)
-        .then(res => {
-            console.log(res)
-            return res.data.username
-        })
+async function search(_id: string): Promise<any> {
+    const res = await axios.get("/api/username?_id=" + _id);
+    console.log(res);
+    return res.data.username;
 }
 
 function refresh(_id: string): void {
