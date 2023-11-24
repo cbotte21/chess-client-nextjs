@@ -16,14 +16,17 @@ export function HiveProvider({children}: any) {
 
     useEffect(() => {
         if (authContext.authenticated()) {
-            hiveClient.Connect(authContext.jwt())
+            hiveClient.Connect(authContext.jwt()!!)
                 .catch(err => {
                     alert(err)
                     authContext.logout()
                     redirect("/auth/login", RedirectType.push)
                 })
         } else {
-            hiveClient.Disconnect(authContext.jwt())
+            const jwt = authContext.jwt()
+            if (jwt != undefined) {
+                hiveClient.Disconnect(jwt)
+            }
         }
     }, [authContext.authenticated()]);
 
